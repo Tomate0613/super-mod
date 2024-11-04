@@ -34,6 +34,7 @@ public class TableUtils {
 
         table.set("name", player.getDisplayName().getString());
         table.set("position", positionTable(player.position()));
+        table.set("is_shift_key_down", LuaValue.valueOf(player.isShiftKeyDown()));
 
         return table;
     }
