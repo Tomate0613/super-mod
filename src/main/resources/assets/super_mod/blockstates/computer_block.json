@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "super_mod:block/computer_block",
+      "y": 270
+    },
+    "facing=north": {
+      "model": "super_mod:block/computer_block",
+      "y": 180
+    },
+    "facing=south": {
+      "model": "super_mod:block/computer_block"
+    },
+    "facing=west": {
+      "model": "super_mod:block/computer_block",
+      "y": 90
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "providers": [
+    {
+      "type": "ttf",
+      "file": "super_mod:departure_mono.ttf",
+      "shift": [0, 0],
+      "size": 11.0,
+      "oversample": 2.0,
+      "skip": ""
+    }
+  ]
+}

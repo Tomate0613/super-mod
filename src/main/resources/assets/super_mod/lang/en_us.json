@@ -1,0 +1,8 @@
+{
+  "death.attack.super_mod.item": "%1$s died from a thrown item!",
+  "block.super_mod.computer_block": "Computer",
+  "block.super_mod.computer_screen_block": "Computer Screen",
+  "block.super_mod.computer_screen_controller_block": "Computer Screen Controller",
+
+  "itemGroup.super_mod.stuff": "SuperMod"
+}
