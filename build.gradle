@@ -42,6 +42,9 @@ dependencies {
     implementation("com.github.FiguraMC.luaj:luaj-core:$luaj_version-figura")
     implementation("com.github.FiguraMC.luaj:luaj-jse:$luaj_version-figura")
 
+    include "com.github.FiguraMC.luaj:luaj-core:$luaj_version-figura"
+    include "com.github.FiguraMC.luaj:luaj-jse:$luaj_version-figura"
+
     modImplementation "dev.doublekekse.area_lib:area_lib:1.0.0"
 }
 
