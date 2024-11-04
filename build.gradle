@@ -22,6 +22,19 @@ repositories {
     }
 
     maven { url 'https://jitpack.io' }
+
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "Modrinth"
+                url = "https://api.modrinth.com/maven"
+            }
+        }
+
+        filter {
+            includeGroup "maven.modrinth"
+        }
+    }
 }
 
 loom {
@@ -45,7 +58,7 @@ dependencies {
     include "com.github.FiguraMC.luaj:luaj-core:$luaj_version-figura"
     include "com.github.FiguraMC.luaj:luaj-jse:$luaj_version-figura"
 
-    modImplementation "dev.doublekekse.area_lib:area_lib:1.0.0"
+    modImplementation "maven.modrinth:area_lib:0.0.1"
 }
 
 processResources {
