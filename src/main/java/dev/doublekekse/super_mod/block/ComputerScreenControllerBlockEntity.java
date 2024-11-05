@@ -6,13 +6,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
-import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class ComputerScreenControllerBlockEntity extends ComputerBlockEntity {
     public int r;
@@ -23,6 +18,14 @@ public class ComputerScreenControllerBlockEntity extends ComputerBlockEntity {
     }
 
     public static void tick(Level level, BlockPos blockPos, BlockState blockState, ComputerScreenControllerBlockEntity instance) {
+        if (!level.isClientSide) {
+            return;
+        }
+
+        if (!instance.isLoaded() && instance.hasSynced) {
+            instance.init();
+        }
+
         instance.triggerEvent("tick");
     }
 
@@ -42,19 +45,6 @@ public class ComputerScreenControllerBlockEntity extends ComputerBlockEntity {
         d = compoundTag.getInt("d");
 
         terminalOutput.setOutputSize(r, d);
-    }
-
-    @Override
-    public @Nullable Packet<ClientGamePacketListener> getUpdatePacket() {
-        return ClientboundBlockEntityDataPacket.create(this);
-    }
-
-    @Override
-    public @NotNull CompoundTag getUpdateTag(HolderLookup.Provider provider) {
-        var compoundTag = new CompoundTag();
-        saveAdditional(compoundTag, provider);
-
-        return compoundTag;
     }
 
     // TODO: RENAME

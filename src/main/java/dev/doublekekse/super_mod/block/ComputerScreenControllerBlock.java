@@ -42,7 +42,6 @@ public class ComputerScreenControllerBlock extends BaseEntityBlock {
     @Override
     public BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {
         var cbe = new ComputerScreenControllerBlockEntity(blockPos, blockState);
-        cbe.init();
 
         return cbe;
     }

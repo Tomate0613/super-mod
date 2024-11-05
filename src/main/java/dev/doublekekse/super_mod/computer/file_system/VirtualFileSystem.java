@@ -1,6 +1,5 @@
 package dev.doublekekse.super_mod.computer.file_system;
 
-import dev.doublekekse.super_mod.SuperMod;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 
@@ -14,14 +13,7 @@ public class VirtualFileSystem {
     }
 
     public byte[] readFile(String filename) {
-        var file = files.get(filename);
-
-        if (file != null) {
-            return file;
-        }
-
-        return SuperMod.defaultFiles.get(filename);
-
+        return files.get(filename);
     }
 
     public void deleteFile(String filename) {
@@ -29,7 +21,7 @@ public class VirtualFileSystem {
     }
 
     public boolean fileExists(String filename) {
-        return files.containsKey(filename) || SuperMod.defaultFiles.containsKey(filename);
+        return files.containsKey(filename);
     }
 
     public Map<String, byte[]> getCustomFiles() {
@@ -37,17 +29,7 @@ public class VirtualFileSystem {
     }
 
     public List<String> listFiles() {
-        var list = new ArrayList<String>(SuperMod.defaultFiles.size());
-
-        for (var filename : SuperMod.defaultFiles.keySet()) {
-            if (!files.containsKey(filename)) {
-                list.add(filename);
-            }
-        }
-
-        list.addAll(files.keySet());
-
-        return list;
+        return files.keySet().stream().toList();
     }
 
     public void writeNbt(CompoundTag compoundTag) {

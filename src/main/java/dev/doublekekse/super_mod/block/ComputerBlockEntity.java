@@ -12,9 +12,13 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.luaj.vm2.*;
 
@@ -25,6 +29,7 @@ public class ComputerBlockEntity extends BlockEntity {
     public VirtualFileSystem vfs = new VirtualFileSystem();
 
     private boolean isLoaded = false;
+    protected boolean hasSynced = false;
 
     public TerminalOutputStream terminalOutput = new TerminalOutputStream();
     public Stack<LuaProcess> processStack = new Stack<>();
@@ -35,12 +40,14 @@ public class ComputerBlockEntity extends BlockEntity {
 
     protected ComputerBlockEntity(BlockEntityType type, BlockPos blockPos, BlockState blockState) {
         super(type, blockPos, blockState);
+
+        SuperMod.defaultFiles.forEach(vfs::createFile);
+        setChanged();
     }
 
     public void init() {
         isLoaded = true;
 
-        //startProcess("puter.run(\"bash.lua\")");
         try {
             if (vfs.fileExists("init.lua")) {
                 openProgram("init.lua");
@@ -48,8 +55,22 @@ public class ComputerBlockEntity extends BlockEntity {
                 openProgram("bash.lua");
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            SuperMod.LOGGER.error("Can't find bash.lua. The vfs might not be loaded correctly", e);
         }
+    }
+
+    @Override
+    public @Nullable Packet<ClientGamePacketListener> getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
+    }
+
+    @Override
+    public @NotNull CompoundTag getUpdateTag(HolderLookup.Provider provider) {
+        CompoundTag compoundTag = new CompoundTag();
+
+        saveAdditional(compoundTag, provider);
+
+        return compoundTag;
     }
 
     public void openProgram(String script) throws IOException {
@@ -98,6 +119,8 @@ public class ComputerBlockEntity extends BlockEntity {
 
         vfs = new VirtualFileSystem();
         vfs.readNbt(compoundTag);
+
+        hasSynced = true;
     }
 
     public void upload() {
