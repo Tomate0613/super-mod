@@ -2,6 +2,7 @@ package dev.doublekekse.super_mod.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
+import dev.doublekekse.area_lib.AreaLib;
 import dev.doublekekse.super_mod.SuperMod;
 import dev.doublekekse.super_mod.SuperProfile;
 import dev.doublekekse.super_mod.data.SuperSavedData;
@@ -9,8 +10,7 @@ import dev.doublekekse.super_mod.packet.ActivateProfilePacket;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
-import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.network.chat.Component;
 
 import static dev.doublekekse.super_mod.SuperMod.getProfile;
 import static net.minecraft.commands.Commands.argument;
@@ -25,9 +25,16 @@ public class SuperCommand {
                 var profile = new SuperProfile();
                 profile.area = id;
 
+                if (AreaLib.getServerArea(ctx.getSource().getServer(), id) == null) {
+                    ctx.getSource().sendFailure(Component.translatable("command.super_mod.super.profile.create.no_area"));
+                    return 0;
+                }
+
                 var savedData = SuperSavedData.getServerData(ctx.getSource().getServer());
                 savedData.profiles.add(profile);
                 savedData.setDirty();
+
+                ctx.getSource().sendSuccess(() -> Component.translatable("command.super_mod.super.profile.create.success"), true);
 
                 return 1;
             }))).then(literal("modify").then(argument("area", ResourceLocationArgument.id()).then(literal("rotInfluence").then(argument("value", DoubleArgumentType.doubleArg(0, 10)).executes(ctx -> {
@@ -38,6 +45,7 @@ public class SuperCommand {
                 var profile = getProfile(savedData, id);
 
                 if (profile == null) {
+                    ctx.getSource().sendFailure(Component.translatable("command.super_mod.super.profile.modify.no_profile"));
                     return 0;
                 }
 
@@ -53,6 +61,7 @@ public class SuperCommand {
                 var profile = getProfile(savedData, id);
 
                 if (profile == null) {
+                    ctx.getSource().sendFailure(Component.translatable("command.super_mod.super.profile.modify.no_profile"));
                     return 0;
                 }
 
@@ -68,6 +77,7 @@ public class SuperCommand {
                 var profile = getProfile(savedData, id);
 
                 if (profile == null) {
+                    ctx.getSource().sendFailure(Component.translatable("command.super_mod.super.profile.modify.no_profile"));
                     return 0;
                 }
 
@@ -83,6 +93,7 @@ public class SuperCommand {
                 var profile = getProfile(savedData, id);
 
                 if (profile == null) {
+                    ctx.getSource().sendFailure(Component.translatable("command.super_mod.super.profile.modify.no_profile"));
                     return 0;
                 }
 
@@ -98,6 +109,7 @@ public class SuperCommand {
                 var profile = getProfile(savedData, id);
 
                 if (profile == null) {
+                    ctx.getSource().sendFailure(Component.translatable("command.super_mod.super.profile.modify.no_profile"));
                     return 0;
                 }
 
@@ -111,7 +123,6 @@ public class SuperCommand {
 
                 var savedData = SuperSavedData.getServerData(ctx.getSource().getServer());
                 var profile = getProfile(savedData, id);
-
 
                 for (var s : ctx.getSource().getServer().getPlayerList().getPlayers()) {
                     ServerPlayNetworking.send(s, new ActivateProfilePacket(profile, player.getUUID(), null, null));

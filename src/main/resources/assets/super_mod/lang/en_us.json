@@ -3,6 +3,8 @@
   "block.super_mod.computer_block": "Computer",
   "block.super_mod.computer_screen_block": "Computer Screen",
   "block.super_mod.computer_screen_controller_block": "Computer Screen Controller",
-
-  "itemGroup.super_mod.stuff": "SuperMod"
+  "itemGroup.super_mod.stuff": "SuperMod",
+  "command.super_mod.super.profile.create.no_area": "No such area found",
+  "command.super_mod.super.profile.create.success": "Successfully created super profile",
+  "command.super_mod.super.profile.modify.no_profile": "No such profile"
 }

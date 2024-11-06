@@ -187,7 +187,7 @@ public class SuperMod implements ModInitializer {
             return false;
         }
 
-        if (activeProfile == null) {
+        if (activeProfile == null || activeArea == null) {
             return false;
         }
 

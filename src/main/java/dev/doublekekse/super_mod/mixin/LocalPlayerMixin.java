@@ -67,6 +67,10 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayer implements L
 
         var profile = SuperMod.activeProfile;
 
+        if (profile == null) {
+            return;
+        }
+
         double dyRot = (this.getYRot() - this.yRotLast);
         double dxRot = (this.getXRot() - this.xRotLast);
 
