@@ -3,7 +3,6 @@ package dev.doublekekse.super_mod.mixin;
 import dev.doublekekse.super_mod.SuperMod;
 import dev.doublekekse.super_mod.duck.LevelDuck;
 import net.minecraft.Util;
-import net.minecraft.client.DeltaTracker;
 import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceKey;
@@ -29,7 +28,7 @@ import java.util.function.Supplier;
 public abstract class ServerLevelMixin extends Level implements LevelDuck {
     @Shadow
     @Final
-    private EntityTickList entityTickList;
+    EntityTickList entityTickList;
 
     @Shadow
     public abstract void tickNonPassenger(Entity entity);

@@ -121,6 +121,10 @@ public class SuperCommand {
                 var id = ResourceLocationArgument.getId(ctx, "area");
                 var player = ctx.getSource().getPlayer();
 
+                if (player == null) {
+                    return 0;
+                }
+
                 var savedData = SuperSavedData.getServerData(ctx.getSource().getServer());
                 var profile = getProfile(savedData, id);
 

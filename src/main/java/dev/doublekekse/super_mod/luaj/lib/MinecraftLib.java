@@ -1,6 +1,6 @@
 package dev.doublekekse.super_mod.luaj.lib;
 
-import dev.doublekekse.super_mod.luaj.LuaProcess;
+import dev.doublekekse.super_mod.block.ClientComputerLuaProcess;
 import dev.doublekekse.super_mod.luaj.TableUtils;
 import net.minecraft.client.Minecraft;
 import org.luaj.vm2.LuaError;
@@ -11,9 +11,9 @@ import org.luaj.vm2.lib.TwoArgFunction;
 import org.luaj.vm2.lib.ZeroArgFunction;
 
 public class MinecraftLib extends TwoArgFunction {
-    private LuaProcess process;
+    private final ClientComputerLuaProcess process;
 
-    public MinecraftLib(LuaProcess process) {
+    public MinecraftLib(ClientComputerLuaProcess process) {
         this.process = process;
     }
 
@@ -39,7 +39,7 @@ public class MinecraftLib extends TwoArgFunction {
     class get_scoreboard extends OneArgFunction {
         @Override
         public LuaValue call(LuaValue objectiveName) {
-            var scoreboard = process.cbe.getLevel().getScoreboard();
+            var scoreboard = process.getComputer().getLevel().getScoreboard();
 
             if (!objectiveName.isstring()) {
                 throw new LuaError("Objective must be a string");
@@ -47,7 +47,7 @@ public class MinecraftLib extends TwoArgFunction {
 
             var objective = scoreboard.getObjective(objectiveName.tojstring());
 
-            if(objective == null) {
+            if (objective == null) {
                 throw new LuaError("Objective does not exist or is not synced with client");
             }
 

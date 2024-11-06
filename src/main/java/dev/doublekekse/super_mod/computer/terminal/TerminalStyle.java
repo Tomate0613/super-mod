@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 
 public class TerminalStyle extends Style {
-    TextColor backgroundColor;
+    final TextColor backgroundColor;
 
     public TerminalStyle(
         @Nullable TextColor textColor,

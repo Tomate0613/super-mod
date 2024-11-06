@@ -1,17 +1,17 @@
 package dev.doublekekse.super_mod.luaj.lib;
 
-import dev.doublekekse.super_mod.block.ComputerBlockEntity;
 import dev.doublekekse.super_mod.computer.file_system.VirtualFile;
+import dev.doublekekse.super_mod.luaj.LuaComputer;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.BaseLib;
 
 import java.io.InputStream;
 
 public class PiOsBaseLib extends BaseLib {
-    ComputerBlockEntity cbe;
+    final LuaComputer<?> lc;
 
-    public PiOsBaseLib(ComputerBlockEntity cbe) {
-        this.cbe = cbe;
+    public PiOsBaseLib(LuaComputer<?> lc) {
+        this.lc = lc;
     }
 
     public LuaValue call(LuaValue var1, LuaValue var2) {
@@ -21,10 +21,10 @@ public class PiOsBaseLib extends BaseLib {
     }
 
     public InputStream findResource(String filename) {
-        if (!cbe.vfs.fileExists(filename)) {
+        if (!lc.getVfs().fileExists(filename)) {
             return super.findResource(filename);
         } else {
-            var file = new VirtualFile(filename, cbe.vfs);
+            var file = new VirtualFile(filename, lc.getVfs());
             return file.getInputStream();
         }
     }

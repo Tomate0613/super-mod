@@ -17,7 +17,7 @@ import net.minecraft.util.FormattedCharSequence;
 import org.luaj.vm2.LuaValue;
 
 public class ComputerDisplayRenderer implements BlockEntityRenderer<ComputerScreenControllerBlockEntity> {
-    Font font;
+    final Font font;
 
     public ComputerDisplayRenderer(BlockEntityRendererProvider.Context context) {
         font = Minecraft.getInstance().font;
@@ -25,27 +25,8 @@ public class ComputerDisplayRenderer implements BlockEntityRenderer<ComputerScre
 
     @Override
     public void render(ComputerScreenControllerBlockEntity blockEntity, float tickDelta, PoseStack poseStack, MultiBufferSource multiBufferSource, int light, int overlay) {
-        //var lines = blockEntity.terminalOutput.getLines();
         poseStack.pushPose();
-
-        //var stack = new ItemStack(Items.ACACIA_FENCE, 1);
-
-        // Calculate the current offset in the y value
-        //double offset = Math.sin((blockEntity.getLevel().dayTime() + tickDelta) / 8.0) / 4.0;
-        // Move the item
-        //poseStack.translate(0.5, 1.25 + offset, 0.5);
-
-        // Rotate the item
-        //poseStack.mulPose(Direction.NORTH.getRotation());
-
-        //Minecraft.getInstance().getItemRenderer().render(stack, ModelTransformationMode.GROUND, light, overlay, matrices, vertexConsumers, blockEntity.getWorld(), 0);
-        //Minecraft.getInstance().getItemRenderer().renderStatic(stack, ItemDisplayContext.GROUND, light, overlay, poseStack, multiBufferSource, blockEntity.getLevel(), 0);
-
         renderText(blockEntity, tickDelta, poseStack, multiBufferSource, false);
-
-
-        //dir.
-        // Mandatory call after GL calls
         poseStack.popPose();
     }
 
@@ -101,7 +82,6 @@ public class ComputerDisplayRenderer implements BlockEntityRenderer<ComputerScre
         cbe.triggerEvent("render", LuaValue.valueOf(tickDelta));
 
         var lines = cbe.terminalOutput.getLines();
-        var canDraw = cbe.d * 10;
 
         for (int i = 0; i < lines.length; i++) {
             var backgroundX = 0;

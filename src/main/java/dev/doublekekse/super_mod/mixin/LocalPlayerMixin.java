@@ -85,11 +85,6 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayer implements L
             this.connection.send(ClientPlayNetworking.createC2SPacket(new SetSpeedPacket(SuperMod.speed)));
         }
 
-        if (false) {
-            this.itemEntity = null;
-            return;
-        }
-
         var hitResult = calculateHitResult(this);
         if (hitResult == null) {
             this.itemEntity = null;

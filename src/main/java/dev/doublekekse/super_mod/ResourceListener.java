@@ -5,11 +5,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.Unit;
 import net.minecraft.util.profiling.ProfilerFiller;
-import org.intellij.lang.annotations.Identifier;
 import org.jetbrains.annotations.NotNull;
-import org.lwjgl.opengl.MESAFramebufferSwapXY;
 
-import java.io.InputStream;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.stream.Collectors;

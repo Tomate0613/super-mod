@@ -1,7 +1,8 @@
 package dev.doublekekse.super_mod.luaj.lib;
 
 import dev.doublekekse.super_mod.SuperMod;
-import dev.doublekekse.super_mod.luaj.LuaProcess;
+import dev.doublekekse.super_mod.block.ClientComputerLuaProcess;
+import dev.doublekekse.super_mod.block.ComputerBlockEntity;
 import dev.doublekekse.super_mod.packet.RequestSessionPacket;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.resources.ResourceLocation;
@@ -14,9 +15,9 @@ import org.luaj.vm2.lib.ZeroArgFunction;
 
 public class SuperModLib extends TwoArgFunction {
     public LuaFunction sessionCallback;
-    private final LuaProcess process;
+    private final ClientComputerLuaProcess process;
 
-    public SuperModLib(LuaProcess process) {
+    public SuperModLib(ClientComputerLuaProcess process) {
         this.process = process;
     }
 
@@ -57,7 +58,7 @@ public class SuperModLib extends TwoArgFunction {
 
             sessionCallback = callback.checkfunction();
 
-            var cbe = process.cbe;
+            var cbe = (ComputerBlockEntity)process.lc;
 
             ClientPlayNetworking.send(new RequestSessionPacket(cbe.getLevel().dimension().location(), cbe.getBlockPos(), location));
 

@@ -41,9 +41,7 @@ public class ComputerScreenControllerBlock extends BaseEntityBlock {
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {
-        var cbe = new ComputerScreenControllerBlockEntity(blockPos, blockState);
-
-        return cbe;
+        return new ComputerScreenControllerBlockEntity(blockPos, blockState);
     }
 
     @Override

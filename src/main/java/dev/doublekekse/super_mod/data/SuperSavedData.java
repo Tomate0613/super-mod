@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SuperSavedData extends SavedData {
-    public List<SuperProfile> profiles = new ArrayList<>();
+    public final List<SuperProfile> profiles = new ArrayList<>();
 
     @Override
     public @NotNull CompoundTag save(CompoundTag compoundTag, HolderLookup.Provider provider) {

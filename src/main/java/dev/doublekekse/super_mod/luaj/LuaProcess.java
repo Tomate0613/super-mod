@@ -1,7 +1,6 @@
 package dev.doublekekse.super_mod.luaj;
 
 import dev.doublekekse.super_mod.SuperMod;
-import dev.doublekekse.super_mod.block.ComputerBlockEntity;
 import dev.doublekekse.super_mod.luaj.lib.*;
 import org.jetbrains.annotations.Nullable;
 import org.luaj.vm2.Globals;
@@ -10,41 +9,25 @@ import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.compiler.LuaC;
 import org.luaj.vm2.lib.*;
 
-import java.io.IOException;
 import java.io.PrintStream;
 
 public class LuaProcess {
     public final Globals globals;
-    public final PiOsPuterLib puterLib;
-    public final SuperModLib superModLib;
-    public final ComputerBlockEntity cbe;
+    public PiOsBasePuterLib puterLib;
+    public final LuaComputer<?> lc;
 
     boolean markClosed = false;
 
-    public LuaProcess(ComputerBlockEntity cbe) {
-        this.cbe = cbe;
+    public LuaProcess(LuaComputer<?> lc) {
+        this.lc = lc;
 
-        var printStream = new PrintStream(cbe.terminalOutput);
+        var printStream = new PrintStream(this.lc.getTerminalOutput());
 
         globals = new Globals();
         globals.STDOUT = printStream;
         globals.STDERR = printStream;
 
-        globals.load(new PiOsBaseLib(cbe));
-        globals.load(new PackageLib());
-        globals.load(new Bit32Lib());
-        globals.load(new TableLib());
-        globals.load(new StringLib());
-        globals.load(new CoroutineLib());
-        globals.load(new PiOsMathLib());
-        globals.load(new PiOsIoLib(cbe));
-        globals.load(new MinecraftLib(this));
-
-        superModLib = new SuperModLib(this);
-        globals.load(superModLib);
-
-        puterLib = new PiOsPuterLib(this);
-        globals.load(puterLib);
+        loadLibraries();
 
         LoadState.install(globals);
         LuaC.install(globals);
@@ -52,7 +35,22 @@ public class LuaProcess {
         setMaxInstructions(this.globals, 1000);
     }
 
-    public void loadScript(String code, @Nullable LuaValue args) {
+    protected void loadLibraries() {
+        globals.load(new PiOsBaseLib(lc));
+        globals.load(new PackageLib());
+        globals.load(new Bit32Lib());
+        globals.load(new TableLib());
+        globals.load(new StringLib());
+        globals.load(new CoroutineLib());
+        globals.load(new PiOsMathLib());
+        globals.load(new PiOsIoLib(lc));
+
+        puterLib = new PiOsBasePuterLib(this);
+        globals.load(puterLib);
+    }
+
+
+    public void loadScript(String code, @Nullable LuaValue args, boolean keepAlive) {
         wrapError(() -> {
             var chunk = globals.load(code);
 
@@ -62,33 +60,34 @@ public class LuaProcess {
 
             chunk.call();
 
-            if (!puterLib.hasListeners() && superModLib.sessionCallback == null) {
+            if (shouldStopInstantly() && !keepAlive) {
                 stop();
             }
         });
     }
 
+    public boolean shouldStopInstantly() {
+        return !puterLib.hasListeners();
+    }
+
     public void stop() {
-        var open = cbe.processStack.peek();
+        var processStack = lc.getProcessStack();
+        var open = (LuaProcess) processStack.peek();
 
         if (open == this) {
-            cbe.processStack.pop();
+            processStack.pop();
 
-            if (!cbe.processStack.isEmpty() && cbe.processStack.peek().markClosed) {
-                cbe.processStack.peek().stop();
+            if (!processStack.isEmpty() && (processStack.peek()).markClosed) {
+                (processStack.peek()).stop();
             }
         } else {
             this.markClosed = true;
         }
 
-        if (cbe.processStack.isEmpty()) {
+        if (processStack.isEmpty()) {
             wrapError(() -> {
-                try {
-                    cbe.terminalOutput.reset();
-                    cbe.openProgram("bash.lua");
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                lc.getTerminalOutput().reset();
+                lc.openProgram("bash.lua", null, true);
             });
         }
     }
@@ -97,8 +96,12 @@ public class LuaProcess {
         globals.load(new LimitedDebugLib(maxInstructions));
     }
 
+    @FunctionalInterface
+    public interface ThrowingRunnable {
+        void run() throws Exception;
+    }
 
-    public void wrapError(Runnable runnable) {
+    public void wrapError(ThrowingRunnable runnable) {
         try {
             runnable.run();
         } catch (Exception e) {
@@ -111,5 +114,9 @@ public class LuaProcess {
         wrapError(() -> {
             puterLib.triggerEvent(eventName, args);
         });
+    }
+
+    public LuaComputer<?> getComputer() {
+        return lc;
     }
 }

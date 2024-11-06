@@ -42,7 +42,7 @@ public class TerminalOutputStream extends OutputStream {
     }
 
     @Override
-    public void write(byte @NotNull [] b, int off, int len) throws IOException {
+    public void write(byte @NotNull [] b, int off, int len) {
         for (int i = off; i < off + len; i++) {
             write(b[i]);
         }
@@ -114,7 +114,7 @@ public class TerminalOutputStream extends OutputStream {
                 cursorX = savedCursorX;
                 break;
             default:
-                SuperMod.LOGGER.warn("Unknown ANSI sequence: " + sequence);
+                SuperMod.LOGGER.warn("Unknown ANSI sequence: {}", sequence);
                 break;
         }
     }

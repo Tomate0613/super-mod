@@ -145,12 +145,12 @@ public class VirtualFile {
             }
 
             @Override
-            public void write(byte[] b, int off, int len) throws IOException {
+            public void write(byte[] b, int off, int len) {
                 VirtualFile.this.write(b, off, len);
             }
 
             @Override
-            public void close() throws IOException {
+            public void close() {
                 VirtualFile.this.close();
             }
         };
@@ -159,17 +159,17 @@ public class VirtualFile {
     public InputStream getInputStream() {
         return new InputStream() {
             @Override
-            public int read() throws IOException {
+            public int read() {
                 return VirtualFile.this.read();
             }
 
             @Override
-            public int read(byte[] b, int off, int len) throws IOException {
+            public int read(byte[] b, int off, int len) {
                 return VirtualFile.this.read(b, off, len);
             }
 
             @Override
-            public void close() throws IOException {
+            public void close() {
                 VirtualFile.this.close();
             }
         };

@@ -22,7 +22,7 @@ public abstract class MinecraftMixin implements MinecraftDuck {
     public ClientLevel level;
 
     @Unique
-    DeltaTracker.Timer affectedTimer = new DeltaTracker.Timer(20, 0, this::tickMs);
+    final DeltaTracker.Timer affectedTimer = new DeltaTracker.Timer(20, 0, this::tickMs);
 
     @Unique
     float tickMs(float f) {

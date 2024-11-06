@@ -1,45 +1,41 @@
 package dev.doublekekse.super_mod.luaj.lib;
 
 import java.io.BufferedInputStream;
-import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
-import dev.doublekekse.super_mod.block.ComputerBlockEntity;
 import dev.doublekekse.super_mod.computer.file_system.VirtualFile;
-import dev.doublekekse.super_mod.computer.file_system.VirtualFileSystem;
+import dev.doublekekse.super_mod.luaj.LuaComputer;
 import org.luaj.vm2.*;
 import org.luaj.vm2.lib.IoLib;
 
 public class PiOsIoLib extends IoLib {
-    VirtualFileSystem vfs;
-    ComputerBlockEntity cbe;
+    final LuaComputer<?> lc;
 
-    public PiOsIoLib(ComputerBlockEntity cbe) {
-        this.cbe = cbe;
-        this.vfs = cbe.vfs;
+    public PiOsIoLib(LuaComputer<?> lc) {
+        this.lc = lc;
     }
 
-    protected File wrapStdin() throws IOException {
+    protected File wrapStdin() {
         return new StdinFile();
     }
 
-    protected File wrapStdout() throws IOException {
+    protected File wrapStdout() {
         return new StdoutFile(FTYPE_STDOUT);
     }
 
-    protected File wrapStderr() throws IOException {
+    protected File wrapStderr() {
         return new StdoutFile(FTYPE_STDERR);
     }
 
     protected File openFile(String filename, boolean readMode, boolean appendMode, boolean updateMode, boolean binaryMode) throws IOException {
-        if (readMode && !vfs.fileExists(filename)) {
+        if (readMode && !lc.getVfs().fileExists(filename)) {
             throw new IOException();
         }
 
-        VirtualFile f = new VirtualFile(filename, vfs);
+        VirtualFile f = new VirtualFile(filename, lc.getVfs());
 
         if (appendMode) {
             f.seek(f.length());
@@ -52,7 +48,7 @@ public class PiOsIoLib extends IoLib {
     }
 
     protected File openProgram(String prog, String mode) throws IOException {
-        cbe.openProgram(prog);
+        lc.openProgram(prog, null, false);
 
         return "w".equals(mode) ?
             new FileImpl(globals.STDOUT) :
@@ -101,7 +97,7 @@ public class PiOsIoLib extends IoLib {
             return file == null;
         }
 
-        public void close() throws IOException {
+        public void close() {
             closed = true;
             if (file != null) {
                 file.close();
@@ -128,7 +124,7 @@ public class PiOsIoLib extends IoLib {
             return closed;
         }
 
-        public int seek(String option, int pos) throws IOException {
+        public int seek(String option, int pos) {
             if (file != null) {
                 if ("set".equals(option)) {
                     file.seek(pos);
@@ -204,17 +200,17 @@ public class PiOsIoLib extends IoLib {
             return "file (" + this.hashCode() + ")";
         }
 
-        private final PrintStream getPrintStream() {
+        private PrintStream getPrintStream() {
             return file_type == FTYPE_STDERR ?
                 globals.STDERR :
                 globals.STDOUT;
         }
 
-        public void write(LuaString string) throws IOException {
+        public void write(LuaString string) {
             getPrintStream().write(string.m_bytes, string.m_offset, string.m_length);
         }
 
-        public void flush() throws IOException {
+        public void flush() {
             getPrintStream().flush();
         }
 
@@ -222,7 +218,7 @@ public class PiOsIoLib extends IoLib {
             return true;
         }
 
-        public void close() throws IOException {
+        public void close() {
             // do not close std files.
         }
 
@@ -230,27 +226,26 @@ public class PiOsIoLib extends IoLib {
             return false;
         }
 
-        public int seek(String option, int bytecount) throws IOException {
+        public int seek(String option, int bytecount) {
             return 0;
         }
 
         public void setvbuf(String mode, int size) {
         }
 
-        public int remaining() throws IOException {
+        public int remaining() {
             return 0;
         }
 
-        public int peek() throws IOException, EOFException {
+        public int peek() {
             return 0;
         }
 
-        public int read() throws IOException, EOFException {
+        public int read() {
             return 0;
         }
 
-        public int read(byte[] bytes, int offset, int length)
-            throws IOException {
+        public int read(byte[] bytes, int offset, int length) {
             return 0;
         }
     }
@@ -263,17 +258,17 @@ public class PiOsIoLib extends IoLib {
             return "file (" + this.hashCode() + ")";
         }
 
-        public void write(LuaString string) throws IOException {
+        public void write(LuaString string) {
         }
 
-        public void flush() throws IOException {
+        public void flush() {
         }
 
         public boolean isstdfile() {
             return true;
         }
 
-        public void close() throws IOException {
+        public void close() {
             // do not close std files.
         }
 
@@ -281,25 +276,25 @@ public class PiOsIoLib extends IoLib {
             return false;
         }
 
-        public int seek(String option, int bytecount) throws IOException {
+        public int seek(String option, int bytecount) {
             return 0;
         }
 
         public void setvbuf(String mode, int size) {
         }
 
-        public int remaining() throws IOException {
+        public int remaining() {
             return -1;
         }
 
-        public int peek() throws IOException, EOFException {
+        public int peek() throws IOException {
             globals.STDIN.mark(1);
             int c = globals.STDIN.read();
             globals.STDIN.reset();
             return c;
         }
 
-        public int read() throws IOException, EOFException {
+        public int read() throws IOException {
             return globals.STDIN.read();
         }
 

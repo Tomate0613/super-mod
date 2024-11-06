@@ -4,8 +4,8 @@ import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.DebugLib;
 
 public class LimitedDebugLib extends DebugLib {
+    final int maxInstructions;
     int instructionsLeft;
-    int maxInstructions;
 
     public LimitedDebugLib(int count) {
         super();

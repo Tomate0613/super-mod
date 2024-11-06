@@ -4,7 +4,6 @@ import dev.doublekekse.super_mod.luaj.LuaProcess;
 import dev.doublekekse.super_mod.luaj.TableUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundSource;
 import org.luaj.vm2.*;
 import org.luaj.vm2.lib.*;
 
@@ -13,11 +12,11 @@ import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PiOsPuterLib extends TwoArgFunction {
-    private final HashMap<String, List<LuaFunction>> eventListeners = new HashMap<>();
-    private final LuaProcess process;
+public class PiOsBasePuterLib extends TwoArgFunction {
+    final HashMap<String, List<LuaFunction>> eventListeners = new HashMap<>();
+    final LuaProcess process;
 
-    public PiOsPuterLib(LuaProcess process) {
+    public PiOsBasePuterLib(LuaProcess process) {
         this.process = process;
     }
 
@@ -29,18 +28,21 @@ public class PiOsPuterLib extends TwoArgFunction {
     public LuaValue call(LuaValue script, LuaValue env) {
         LuaTable puter = new LuaTable();
 
+        setPuter(puter);
+
+        env.set("puter", puter);
+        return puter;
+    }
+
+    void setPuter(LuaTable puter) {
         puter.set("on", new on());
         puter.set("stop", new stop());
         puter.set("run", new run());
         puter.set("list_files", new list_files());
         puter.set("get_screen_size", new list_files());
-        puter.set("upload", new upload());
         puter.set("get_screen_size", new get_screen_size());
         puter.set("make_sound", new make_sound());
         puter.set("get_pos", new get_pos());
-
-        env.set("puter", puter);
-        return puter;
     }
 
     class on extends TwoArgFunction {
@@ -73,7 +75,7 @@ public class PiOsPuterLib extends TwoArgFunction {
 
             String scriptName = script.tojstring();
             try {
-                process.cbe.openProgram(scriptName, args);
+                process.lc.openProgram(scriptName, args, false);
             } catch (IOException e) {
                 throw new LuaError(e);
             }
@@ -94,7 +96,7 @@ public class PiOsPuterLib extends TwoArgFunction {
     class get_pos extends ZeroArgFunction {
         @Override
         public LuaValue call() {
-            return TableUtils.positionTable(process.cbe.getBlockPos());
+            return TableUtils.positionTable(process.lc.getBlockPos());
         }
     }
 
@@ -103,8 +105,8 @@ public class PiOsPuterLib extends TwoArgFunction {
         public LuaValue call() {
             LuaTable table = new LuaTable();
 
-            table.set("x", process.cbe.terminalOutput.screenSizeX);
-            table.set("y", process.cbe.terminalOutput.screenSizeY);
+            table.set("x", process.lc.getTerminalOutput().screenSizeX);
+            table.set("y", process.lc.getTerminalOutput().screenSizeY);
 
             return table;
         }
@@ -125,8 +127,9 @@ public class PiOsPuterLib extends TwoArgFunction {
 
             var se = SoundEvent.createVariableRangeEvent(location);
 
-            var cbe = process.cbe;
-            cbe.getLevel().playLocalSound(cbe.getBlockPos(), se, SoundSource.BLOCKS, volume.tofloat(), pitch.tofloat(), true);
+            var cbe = process.lc;
+            cbe.playSound(cbe.getBlockPos(), se, volume.tofloat(), pitch.tofloat());
+            //cbe.getLevel().playLocalSound(cbe.getBlockPos(), se, SoundSource.BLOCKS, volume.tofloat(), pitch.tofloat(), true);
 
             return NONE;
         }
@@ -135,7 +138,7 @@ public class PiOsPuterLib extends TwoArgFunction {
     class list_files extends ZeroArgFunction {
         @Override
         public LuaValue call() {
-            var filenames = process.cbe.vfs.listFiles();
+            var filenames = process.lc.getVfs().listFiles();
 
             var valueList = new LuaValue[filenames.size()];
 
@@ -147,13 +150,6 @@ public class PiOsPuterLib extends TwoArgFunction {
         }
     }
 
-    class upload extends ZeroArgFunction {
-        @Override
-        public LuaValue call() {
-            process.cbe.upload();
-            return NONE;
-        }
-    }
 
     public void triggerEvent(String eventName, LuaValue... args) {
         if (eventListeners.containsKey(eventName)) {

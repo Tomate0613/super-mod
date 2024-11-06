@@ -4,8 +4,6 @@ import dev.doublekekse.super_mod.SuperMod;
 import dev.doublekekse.super_mod.block.ComputerBlockEntity;
 import dev.doublekekse.super_mod.duck.ItemEntityDuck;
 import dev.doublekekse.super_mod.duck.PlayerDuck;
-import net.minecraft.world.entity.EntityDimensions;
-import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;

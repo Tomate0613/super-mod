@@ -9,8 +9,8 @@ import net.minecraft.network.chat.Component;
 import org.luaj.vm2.LuaValue;
 
 public class ComputerScreen extends Screen {
-    ComputerBlockEntity cbe;
-    boolean isScreen;
+    final ComputerBlockEntity cbe;
+    final boolean isScreen;
 
     public ComputerScreen(ComputerBlockEntity cbe, boolean isScreen) {
         super(Component.translatable("gui.super_mod.screen.computer"));

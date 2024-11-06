@@ -6,5 +6,6 @@
   "itemGroup.super_mod.stuff": "SuperMod",
   "command.super_mod.super.profile.create.no_area": "No such area found",
   "command.super_mod.super.profile.create.success": "Successfully created super profile",
-  "command.super_mod.super.profile.modify.no_profile": "No such profile"
+  "command.super_mod.super.profile.modify.no_profile": "No such profile",
+  "gui.super_mod.screen.computer": "Computer"
 }

@@ -41,8 +41,8 @@ import java.util.*;
 
 public class SuperMod implements ModInitializer {
     public static double speed;
-    public static Map<String, byte[]> defaultFiles = new HashMap<>();
-    public static Logger LOGGER = LogUtils.getLogger();
+    public static final Map<String, byte[]> defaultFiles = new HashMap<>();
+    public static final Logger LOGGER = LogUtils.getLogger();
 
     public static SuperProfile activeProfile;
     static UUID activePlayer;
@@ -218,6 +218,8 @@ public class SuperMod implements ModInitializer {
 
     @Environment(EnvType.CLIENT)
     public static boolean isHot() {
+        assert Minecraft.getInstance().player != null;
+
         return isHot(Minecraft.getInstance().player);
     }
 
