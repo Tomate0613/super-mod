@@ -32,7 +32,7 @@ public class LuaProcess {
         LoadState.install(globals);
         LuaC.install(globals);
 
-        setMaxInstructions(this.globals, 1000);
+        setMaxInstructions(this.globals, 100000000);
     }
 
     protected void loadLibraries() {
@@ -107,6 +107,7 @@ public class LuaProcess {
         } catch (Exception e) {
             e.printStackTrace(globals.STDERR);
             SuperMod.LOGGER.error("Super computer error", e);
+            stop();
         }
     }
 
