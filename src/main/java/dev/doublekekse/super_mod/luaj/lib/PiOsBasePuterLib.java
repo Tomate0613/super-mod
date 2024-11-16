@@ -39,7 +39,6 @@ public class PiOsBasePuterLib extends TwoArgFunction {
         puter.set("stop", new stop());
         puter.set("run", new run());
         puter.set("list_files", new list_files());
-        puter.set("get_screen_size", new list_files());
         puter.set("get_screen_size", new get_screen_size());
         puter.set("make_sound", new make_sound());
         puter.set("get_pos", new get_pos());
