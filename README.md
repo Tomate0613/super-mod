@@ -11,6 +11,7 @@
   - Remember to sync the fs afterward
 - Computers are not run on a separate threat. This means that all blocking code will freeze the game.
   - To combat infinite loops computers have a maximum amount of instructions set
+- `init.lua` will get run when a screen controller block is loaded or a computer is clicked
 
 ### Library
 
