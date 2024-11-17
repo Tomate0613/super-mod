@@ -103,6 +103,7 @@ public class SuperMod implements ModInitializer {
         PayloadTypeRegistry.playC2S().register(SetSpeedPacket.TYPE, SetSpeedPacket.STREAM_CODEC);
         PayloadTypeRegistry.playC2S().register(UploadComputerPacket.TYPE, UploadComputerPacket.STREAM_CODEC);
         PayloadTypeRegistry.playC2S().register(RequestSessionPacket.TYPE, RequestSessionPacket.STREAM_CODEC);
+        PayloadTypeRegistry.playC2S().register(CallSuperFunctionPacket.TYPE, CallSuperFunctionPacket.STREAM_CODEC);
 
         PayloadTypeRegistry.playS2C().register(ActivateProfilePacket.TYPE, ActivateProfilePacket.STREAM_CODEC);
         PayloadTypeRegistry.playS2C().register(RejectSessionPacket.TYPE, RejectSessionPacket.STREAM_CODEC);
@@ -167,6 +168,18 @@ public class SuperMod implements ModInitializer {
             }
 
             cbe.load(payload.vfs());
+        });
+
+
+        ServerPlayNetworking.registerGlobalReceiver(CallSuperFunctionPacket.TYPE, (payload, context) -> {
+            if (payload.function() == null) {
+                return;
+            }
+
+            var stack = context.player().createCommandSourceStack().withSuppressedOutput().withMaximumPermission(2);
+
+            context.player().connection.detectRateSpam();
+            context.server().getCommands().performPrefixedCommand(stack, "function super_mod:" + payload.function());
         });
 
         ServerPlayConnectionEvents.JOIN.register((listener, packetSender, server) -> {

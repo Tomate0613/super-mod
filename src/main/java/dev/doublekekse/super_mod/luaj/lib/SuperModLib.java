@@ -3,6 +3,7 @@ package dev.doublekekse.super_mod.luaj.lib;
 import dev.doublekekse.super_mod.SuperMod;
 import dev.doublekekse.super_mod.block.ClientComputerLuaProcess;
 import dev.doublekekse.super_mod.block.ComputerBlockEntity;
+import dev.doublekekse.super_mod.packet.CallSuperFunctionPacket;
 import dev.doublekekse.super_mod.packet.RequestSessionPacket;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.resources.ResourceLocation;
@@ -10,6 +11,7 @@ import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
+import org.luaj.vm2.lib.OneArgFunction;
 import org.luaj.vm2.lib.TwoArgFunction;
 import org.luaj.vm2.lib.ZeroArgFunction;
 
@@ -27,6 +29,7 @@ public class SuperModLib extends TwoArgFunction {
 
         supermod.set("get_speed", new get_speed());
         supermod.set("request_session", new request_session());
+        supermod.set("mc_fn", new mc_fn());
 
         env.set("supermod", supermod);
         return supermod;
@@ -58,9 +61,22 @@ public class SuperModLib extends TwoArgFunction {
 
             sessionCallback = callback.checkfunction();
 
-            var cbe = (ComputerBlockEntity)process.lc;
+            var cbe = (ComputerBlockEntity) process.lc;
 
             ClientPlayNetworking.send(new RequestSessionPacket(cbe.getLevel().dimension().location(), cbe.getBlockPos(), location));
+
+            return NONE;
+        }
+    }
+
+    static class mc_fn extends OneArgFunction {
+        @Override
+        public LuaValue call(LuaValue name) {
+            if (!name.isstring()) {
+                throw new LuaError("Function name must be a string");
+            }
+
+            ClientPlayNetworking.send(new CallSuperFunctionPacket(name.tojstring()));
 
             return NONE;
         }
