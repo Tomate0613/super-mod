@@ -46,6 +46,10 @@ public abstract class ItemEntityMixin extends Entity implements ItemEntityDuck {
             return;
         }
 
+        if (getDeltaMovement().lengthSqr() < 0.1) {
+            return;
+        }
+
         var box = getBoundingBox().inflate(.5);
 
         var entities = level().getEntities(this, box, (entity -> damageTarget == DamageTarget.MOB ? entity instanceof LivingEntity && !(entity instanceof Player) : entity instanceof Player));
@@ -58,15 +62,18 @@ public abstract class ItemEntityMixin extends Entity implements ItemEntityDuck {
         Entity finalOwner = owner;
 
         entities.forEach(entity -> {
-            if (entity.hurtMarked /*TOODO*/ || entity == finalOwner || !entity.isAlive() || entity.isRemoved()) {
+            if (entity == finalOwner || !entity.isAlive() || entity.isRemoved()) {
                 return;
             }
 
             var damageSource = new DamageSource(SuperDamageTypes.holder(level(), SuperDamageTypes.ITEM), finalOwner);
 
             var damage = 10f;
-            entity.hurt(damageSource, damage);
-            canHurt = false;
+            var hasHurt = entity.hurt(damageSource, damage);
+
+            if (hasHurt) {
+                canHurt = false;
+            }
         });
 
         if (!canHurt) {

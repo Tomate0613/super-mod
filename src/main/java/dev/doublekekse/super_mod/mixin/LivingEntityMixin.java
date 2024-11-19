@@ -30,9 +30,13 @@ public abstract class LivingEntityMixin extends Entity {
     @Shadow
     public abstract void setItemSlot(EquipmentSlot equipmentSlot, ItemStack itemStack);
 
-    @Inject(method = "hurt", at = @At("HEAD"))
+    @Inject(method = "hurt", at = @At("RETURN"))
     void hurt(DamageSource damageSource, float r, CallbackInfoReturnable<Boolean> cir) {
         if (!SuperMod.isAffected(this)) {
+            return;
+        }
+
+        if (!cir.getReturnValue()) {
             return;
         }
 
