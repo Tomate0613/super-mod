@@ -18,9 +18,17 @@ public class ComputerScreen extends Screen {
         this.cbe = cbe;
         this.isScreen = isScreen && !Minecraft.getInstance().isSingleplayer();
 
-        if(!cbe.isLoaded()) {
+        if (!cbe.isLoaded()) {
             cbe.init();
         }
+    }
+
+    @Override
+    protected void init() {
+        super.init();
+
+        var maxLines = (height) / 10;
+        cbe.terminalOutput.setOutputSize(1, maxLines / 10);
     }
 
     @Override
