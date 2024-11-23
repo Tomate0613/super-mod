@@ -1,5 +1,5 @@
 print("HELP")
-print("Use '> ls' to list available programs")
-print("Drag and drop a file onto the block to put it in the filesystem")
-print("Use '> upload' to sync changes made to the filesystem to other players")
+print("")
+print("Please refer to the docs:")
+print("https://github.com/Tomate0613/super-mod")
 print("")
