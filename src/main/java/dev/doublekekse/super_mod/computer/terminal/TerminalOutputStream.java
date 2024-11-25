@@ -385,7 +385,7 @@ public class TerminalOutputStream extends OutputStream {
         }
 
         if (cursorX > totalCharacterCount) {
-            line.add(Component.literal(" ".repeat(cursorX - totalCharacterCount)));
+            line.add(Component.literal(" ".repeat(cursorX - totalCharacterCount)).withStyle(defaultStyle()));
             line.add(Component.literal("" + c).withStyle(currentStyle));
 
             return;
