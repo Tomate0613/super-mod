@@ -10,7 +10,6 @@ import net.minecraft.network.chat.TextColor;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
