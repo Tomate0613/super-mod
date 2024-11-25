@@ -26,58 +26,47 @@ public class ComputerDisplayRenderer implements BlockEntityRenderer<ComputerScre
     @Override
     public void render(ComputerScreenControllerBlockEntity blockEntity, float tickDelta, PoseStack poseStack, MultiBufferSource multiBufferSource, int light, int overlay) {
         poseStack.pushPose();
-        renderText(blockEntity, tickDelta, poseStack, multiBufferSource, false);
+        renderText(blockEntity, tickDelta, poseStack, multiBufferSource);
         poseStack.popPose();
     }
 
 
-    private void translateSignText(PoseStack poseStack, boolean bl, ComputerScreenControllerBlockEntity blockEntity) {
-        if (!bl) {
-            poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
-        }
-
-
-        //poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
-        float f = 0.01f;
-        //poseStack.translate(-1, 1, 0);
-
+    private void translateSignText(PoseStack poseStack, ComputerScreenControllerBlockEntity blockEntity, float offset) {
         var dir = blockEntity.getBlockState().getValue(ComputerScreenControllerBlock.FACING);
 
         switch (dir) {
             case UP -> {
                 poseStack.mulPose(Axis.XP.rotationDegrees(-90));
-                poseStack.translate(-1, 1, 1);
+                poseStack.translate(0, 0, offset + 1);
             }
             case DOWN -> {
                 poseStack.mulPose(Axis.XP.rotationDegrees(90));
-                poseStack.translate(-1, 0, 0);
+                poseStack.translate(0, 1, offset);
             }
             case EAST -> {
-                poseStack.mulPose(Axis.YP.rotationDegrees(-90));
-                poseStack.translate(-1, 1, 1);
+                poseStack.mulPose(Axis.YP.rotationDegrees(90));
+                poseStack.translate(-1, 1, offset + 1);
             }
             case WEST -> {
-                poseStack.mulPose(Axis.YP.rotationDegrees(90));
-                poseStack.translate(0, 1, 0);
+                poseStack.mulPose(Axis.YP.rotationDegrees(-90));
+                poseStack.translate(0, 1, offset);
             }
             case NORTH -> {
-                poseStack.translate(-1, 1, 0);
+                poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
+                poseStack.translate(-1, 1, offset);
             }
             case SOUTH -> {
-                poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
-                poseStack.translate(0, 1, 1);
+                poseStack.translate(0, 1, offset + 1);
             }
         }
 
-        //poseStack.mulPose(dir.getRotation());
-        //poseStack.mulPose(Axis.XN.rotationDegrees(-90));
+        float f = 0.01f;
+
         poseStack.scale(f, -f, f);
     }
 
-    void renderText(ComputerScreenControllerBlockEntity cbe, float tickDelta, PoseStack poseStack, MultiBufferSource multiBufferSource, boolean bl) {
-        poseStack.pushPose();
-
-        translateSignText(poseStack, bl, cbe);
+    void renderText(ComputerScreenControllerBlockEntity cbe, float tickDelta, PoseStack poseStack, MultiBufferSource multiBufferSource) {
+        //translateSignText(poseStack, cbe, 0);
 
         cbe.triggerEvent("render", LuaValue.valueOf(tickDelta));
 
@@ -86,14 +75,25 @@ public class ComputerDisplayRenderer implements BlockEntityRenderer<ComputerScre
         for (int i = 0; i < lines.length; i++) {
             var backgroundX = 0;
             for (var si : lines[i].getSiblings()) {
+                poseStack.pushPose();
+
+                translateSignText(poseStack, cbe, 0);
+
                 backgroundX += renderBackground(si, poseStack, multiBufferSource, i, backgroundX);
+
+                poseStack.popPose();
             }
+
+            poseStack.pushPose();
+
+            translateSignText(poseStack, cbe, .01f);
 
             FormattedCharSequence formattedCharSequence = lines[i].getVisualOrderText();
             this.font.drawInBatch(formattedCharSequence, 10, 10 + (i) * 10, 0xffffff, false, poseStack.last().pose(), multiBufferSource, Font.DisplayMode.POLYGON_OFFSET, 0, 0xffffff);
+
+            poseStack.popPose();
         }
 
-        poseStack.popPose();
     }
 
     private int renderBackground(Component si, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, int backgroundX) {
