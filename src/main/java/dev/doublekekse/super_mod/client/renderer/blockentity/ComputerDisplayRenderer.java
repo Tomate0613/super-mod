@@ -26,7 +26,7 @@ public class ComputerDisplayRenderer implements BlockEntityRenderer<ComputerScre
     @Override
     public void render(ComputerScreenControllerBlockEntity blockEntity, float tickDelta, PoseStack poseStack, MultiBufferSource multiBufferSource, int light, int overlay) {
         poseStack.pushPose();
-        renderText(blockEntity, tickDelta, poseStack, multiBufferSource, light);
+        renderText(blockEntity, tickDelta, poseStack, multiBufferSource);
         poseStack.popPose();
     }
 
@@ -65,7 +65,7 @@ public class ComputerDisplayRenderer implements BlockEntityRenderer<ComputerScre
         poseStack.scale(f, -f, f);
     }
 
-    void renderText(ComputerScreenControllerBlockEntity cbe, float tickDelta, PoseStack poseStack, MultiBufferSource multiBufferSource, int light) {
+    void renderText(ComputerScreenControllerBlockEntity cbe, float tickDelta, PoseStack poseStack, MultiBufferSource multiBufferSource) {
         cbe.triggerEvent("render", LuaValue.valueOf(tickDelta));
 
         var lines = cbe.terminalOutput.getLines();
@@ -84,10 +84,11 @@ public class ComputerDisplayRenderer implements BlockEntityRenderer<ComputerScre
 
             poseStack.pushPose();
 
-            translateSignText(poseStack, cbe, .001f);
+            //translateSignText(poseStack, cbe, .001f);
+            translateSignText(poseStack, cbe, .00f);
 
             FormattedCharSequence formattedCharSequence = lines[i].getVisualOrderText();
-            this.font.drawInBatch(formattedCharSequence, 10, 10 + (i) * 10, 0xffffff, false, poseStack.last().pose(), multiBufferSource, Font.DisplayMode.POLYGON_OFFSET, 0, light);
+            this.font.drawInBatch(formattedCharSequence, 10, 10 + (i) * 10, 0xffffff, false, poseStack.last().pose(), multiBufferSource, Font.DisplayMode.POLYGON_OFFSET, 0, 0xf000f0);
 
             poseStack.popPose();
         }
