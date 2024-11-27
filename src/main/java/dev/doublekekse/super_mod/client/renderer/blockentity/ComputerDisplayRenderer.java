@@ -84,8 +84,7 @@ public class ComputerDisplayRenderer implements BlockEntityRenderer<ComputerScre
 
             poseStack.pushPose();
 
-            //translateSignText(poseStack, cbe, .001f);
-            translateSignText(poseStack, cbe, .00f);
+            translateSignText(poseStack, cbe, .001f);
 
             FormattedCharSequence formattedCharSequence = lines[i].getVisualOrderText();
             this.font.drawInBatch(formattedCharSequence, 10, 10 + (i) * 10, 0xffffff, false, poseStack.last().pose(), multiBufferSource, Font.DisplayMode.POLYGON_OFFSET, 0, 0xf000f0);
