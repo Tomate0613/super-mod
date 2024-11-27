@@ -26,7 +26,7 @@ public class ComputerDisplayRenderer implements BlockEntityRenderer<ComputerScre
     @Override
     public void render(ComputerScreenControllerBlockEntity blockEntity, float tickDelta, PoseStack poseStack, MultiBufferSource multiBufferSource, int light, int overlay) {
         poseStack.pushPose();
-        renderText(blockEntity, tickDelta, poseStack, multiBufferSource);
+        renderText(blockEntity, tickDelta, poseStack, multiBufferSource, light);
         poseStack.popPose();
     }
 
@@ -65,9 +65,7 @@ public class ComputerDisplayRenderer implements BlockEntityRenderer<ComputerScre
         poseStack.scale(f, -f, f);
     }
 
-    void renderText(ComputerScreenControllerBlockEntity cbe, float tickDelta, PoseStack poseStack, MultiBufferSource multiBufferSource) {
-        //translateSignText(poseStack, cbe, 0);
-
+    void renderText(ComputerScreenControllerBlockEntity cbe, float tickDelta, PoseStack poseStack, MultiBufferSource multiBufferSource, int light) {
         cbe.triggerEvent("render", LuaValue.valueOf(tickDelta));
 
         var lines = cbe.terminalOutput.getLines();
@@ -86,10 +84,10 @@ public class ComputerDisplayRenderer implements BlockEntityRenderer<ComputerScre
 
             poseStack.pushPose();
 
-            translateSignText(poseStack, cbe, .01f);
+            translateSignText(poseStack, cbe, .001f);
 
             FormattedCharSequence formattedCharSequence = lines[i].getVisualOrderText();
-            this.font.drawInBatch(formattedCharSequence, 10, 10 + (i) * 10, 0xffffff, false, poseStack.last().pose(), multiBufferSource, Font.DisplayMode.POLYGON_OFFSET, 0, 0xffffff);
+            this.font.drawInBatch(formattedCharSequence, 10, 10 + (i) * 10, 0xffffff, false, poseStack.last().pose(), multiBufferSource, Font.DisplayMode.POLYGON_OFFSET, 0, light);
 
             poseStack.popPose();
         }
@@ -110,11 +108,8 @@ public class ComputerDisplayRenderer implements BlockEntityRenderer<ComputerScre
         }
 
 
-        //graphics.fill(100 + backgroundX, 9 + i * 10, 100 + backgroundX + width, 20 + i * 10, backgroundColor.getValue() | 0xFF000000);
-
         VertexConsumer vertexConsumer = multiBufferSource.getBuffer(RenderType.debugFilledBox());
 
-        //vertexConsumer.addVertex(vector3f3.x(), vector3f3.y(), vector3f3.z(), k, vertex.u, vertex.v, j, i, f, g, h);
         var matrix4f = poseStack.last();
 
         var light = 15728640;
