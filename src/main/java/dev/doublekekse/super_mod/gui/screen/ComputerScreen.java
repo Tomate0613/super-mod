@@ -27,8 +27,10 @@ public class ComputerScreen extends Screen {
     protected void init() {
         super.init();
 
-        var maxLines = (height) / 10;
-        cbe.terminalOutput.setOutputSize(1, maxLines / 10);
+        if (!this.isScreen) {
+            var maxLines = (height) / 10;
+            cbe.terminalOutput.setOutputSize(1, maxLines / 10);
+        }
     }
 
     @Override
