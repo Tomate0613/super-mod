@@ -43,7 +43,7 @@ Most of the default lua library is usable as is, but supermod also provides addi
 #### SuperModLib
 - `double supermod.get_speed()`
 - `supermod.request_session(string profile, fn callback)` Request a super session to start for the player
-- `supermod.mc_fn(string function_name)` Run a minecraft function in the `super_mod` namespace
+- `supermod.mc_fn(string function_name)` Run a minecraft function in the `super_mod` namespace [NOTE: This is a post fest addition]
 
 ### Tables
 
