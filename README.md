@@ -38,7 +38,7 @@ Most of the default lua library is usable as is, but supermod also provides addi
 
 #### MinecraftLib
 - `Player minecraft.get_local_player()`
-- `Scoreboard minecraft.get_scoreboard(string objective)` Note that only synced objectives are visible to computers.
+- `Objective minecraft.get_scoreboard(string objective)` Note that only synced objectives are visible to computers.
 
 #### SuperModLib
 - `double supermod.get_speed()`
