@@ -1,12 +1,15 @@
 package dev.doublekekse.super_mod.luaj;
 
-import dev.doublekekse.super_mod.SuperProfile;
+import dev.doublekekse.area_lib.AreaLib;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.scores.Objective;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
+
+import static dev.doublekekse.super_mod.registry.SuperAreaComponents.SUPER_COMPONENT;
 
 public class TableUtils {
     public static LuaTable positionTable(BlockPos pos) {
@@ -39,14 +42,15 @@ public class TableUtils {
         return table;
     }
 
-    public static LuaValue profileTable(SuperProfile profile) {
+    public static LuaValue profileTable(ResourceLocation areaId) {
+        var profile = AreaLib.getClientArea(areaId).get(SUPER_COMPONENT);
         if (profile == null) {
             return LuaValue.NIL;
         }
 
         LuaTable table = new LuaTable();
 
-        table.set("area", profile.area.toString());
+        table.set("area", areaId.toString());
         table.set("itemUsageInfluence", profile.itemUsageInfluence);
         table.set("jumpingInfluence", profile.jumpingInfluence);
         table.set("offset", profile.offset);

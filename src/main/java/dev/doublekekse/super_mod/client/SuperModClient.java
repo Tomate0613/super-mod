@@ -21,7 +21,7 @@ public class SuperModClient implements ClientModInitializer {
         BlockEntityRenderers.register(SuperBlockEntities.COMPUTER_SCREEN_CONTROLLER_BLOCK_ENTITY, ComputerDisplayRenderer::new);
 
         ClientPlayNetworking.registerGlobalReceiver(ActivateProfilePacket.TYPE, (packet, context) -> {
-            SuperMod.activateClient(packet.player(), packet.profile());
+            SuperMod.activateClient(packet.player(), packet.areaId());
 
             var level = context.client().level;
 
@@ -39,7 +39,7 @@ public class SuperModClient implements ClientModInitializer {
                         return;
                     }
 
-                    cbe.processStack.peek().superModLib.sessionCallback.call(LuaValue.TRUE, TableUtils.profileTable(packet.profile()));
+                    cbe.processStack.peek().superModLib.sessionCallback.call(LuaValue.TRUE, TableUtils.profileTable(packet.areaId()));
                 }
             }
         });

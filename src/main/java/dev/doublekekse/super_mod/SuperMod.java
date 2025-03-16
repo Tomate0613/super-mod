@@ -5,7 +5,7 @@ import dev.doublekekse.area_lib.Area;
 import dev.doublekekse.area_lib.AreaLib;
 import dev.doublekekse.super_mod.block.ComputerBlockEntity;
 import dev.doublekekse.super_mod.command.SuperCommand;
-import dev.doublekekse.super_mod.data.SuperSavedData;
+import dev.doublekekse.super_mod.component.SuperComponent;
 import dev.doublekekse.super_mod.packet.*;
 import dev.doublekekse.super_mod.registry.SuperBlockEntities;
 import dev.doublekekse.super_mod.registry.SuperBlocks;
@@ -19,6 +19,7 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -39,12 +40,14 @@ import java.io.*;
 import java.nio.file.Path;
 import java.util.*;
 
+import static dev.doublekekse.super_mod.registry.SuperAreaComponents.SUPER_COMPONENT;
+
 public class SuperMod implements ModInitializer {
     public static double speed;
     public static final Map<String, byte[]> defaultFiles = new HashMap<>();
     public static final Logger LOGGER = LogUtils.getLogger();
 
-    public static SuperProfile activeProfile;
+    public static SuperComponent activeProfile;
     static UUID activePlayer;
     static Area activeArea;
 
@@ -129,25 +132,14 @@ public class SuperMod implements ModInitializer {
                 return;
             }
 
-            var savedData = SuperSavedData.getServerData(context.server());
-            var profile = getProfile(savedData, payload.profileId());
+            var area = AreaLib.getServerArea(context.server(), payload.areaId());
 
-            if (profile == null) {
+            if (area == null || !area.has(SUPER_COMPONENT)) {
                 context.responseSender().sendPacket(new RejectSessionPacket(payload.computerDim(), payload.computerPos(), "Unknown profile"));
                 return;
             }
 
-            SuperMod.activateServer(context.server(), context.player().getUUID(), profile);
-
-            context.responseSender().sendPacket(new ActivateProfilePacket(activeProfile, activePlayer, payload.computerDim(), payload.computerPos()));
-
-            for (var player : context.server().getPlayerList().getPlayers()) {
-                if (player == context.player()) {
-                    continue;
-                }
-
-                ServerPlayNetworking.send(player, new ActivateProfilePacket(activeProfile, activePlayer, payload.computerDim(), payload.computerPos()));
-            }
+            SuperMod.activateServer(context.player().getServer(), context.player().getUUID(), area, payload.computerDim(), payload.computerPos());
         });
 
         ServerPlayNetworking.registerGlobalReceiver(UploadComputerPacket.TYPE, (payload, context) -> {
@@ -183,7 +175,7 @@ public class SuperMod implements ModInitializer {
         });
 
         ServerPlayConnectionEvents.JOIN.register((listener, packetSender, server) -> {
-            packetSender.sendPacket(new ActivateProfilePacket(activeProfile, activePlayer, null, null));
+            packetSender.sendPacket(new ActivateProfilePacket(activeArea != null ? activeArea.getId() : null, activePlayer, null, null));
         });
 
         CommandRegistrationCallback.EVENT.register(
@@ -207,22 +199,32 @@ public class SuperMod implements ModInitializer {
         return activeArea.contains(entity);
     }
 
-    public static void activateClient(UUID player, SuperProfile profile) {
-        if (profile != null) {
-            activeArea = AreaLib.getClientArea(profile.area);
+    public static void activateClient(UUID player, ResourceLocation areaId) {
+        if (areaId != null) {
+            activeArea = AreaLib.getClientArea(areaId);
+            activeProfile = activeArea.get(SUPER_COMPONENT);
+            activePlayer = player;
+        } else {
+            activeProfile = null;
+            activeArea = null;
+            activePlayer = null;
         }
-
-        activePlayer = player;
-        activeProfile = profile;
     }
 
-    public static void activateServer(MinecraftServer server, UUID player, SuperProfile profile) {
-        if (profile != null) {
-            activeArea = AreaLib.getServerArea(server, profile.area);
+    public static void activateServer(MinecraftServer server, UUID player, Area area, @Nullable ResourceLocation computerDimension, @Nullable BlockPos computerPos) {
+        if (area != null) {
+            activeArea = area;
+            activeProfile = area.get(SUPER_COMPONENT);
+            activePlayer = player;
+        } else {
+            activeArea = null;
+            activeProfile = null;
+            activePlayer = null;
         }
 
-        activePlayer = player;
-        activeProfile = profile;
+        for (var s : server.getPlayerList().getPlayers()) {
+            ServerPlayNetworking.send(s, new ActivateProfilePacket(area != null ? area.getId() : null, activePlayer, computerDimension, computerPos));
+        }
     }
 
     public static boolean isHot(Player player) {
@@ -238,15 +240,5 @@ public class SuperMod implements ModInitializer {
 
     public static ResourceLocation id(String path) {
         return ResourceLocation.fromNamespaceAndPath("super_mod", path);
-    }
-
-    public static @Nullable SuperProfile getProfile(SuperSavedData savedData, ResourceLocation id) {
-        for (var profile : savedData.profiles) {
-            if (profile.area.equals(id)) {
-                return profile;
-            }
-        }
-
-        return null;
     }
 }
