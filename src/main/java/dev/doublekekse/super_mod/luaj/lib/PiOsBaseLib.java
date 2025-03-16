@@ -22,7 +22,7 @@ public class PiOsBaseLib extends BaseLib {
 
     public InputStream findResource(String filename) {
         if (!lc.getVfs().fileExists(filename)) {
-            return super.findResource(filename);
+            return null;
         } else {
             var file = new VirtualFile(filename, lc.getVfs());
             return file.getInputStream();
