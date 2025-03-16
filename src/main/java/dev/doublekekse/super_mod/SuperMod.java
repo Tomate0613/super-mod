@@ -7,6 +7,7 @@ import dev.doublekekse.super_mod.block.ComputerBlockEntity;
 import dev.doublekekse.super_mod.command.SuperCommand;
 import dev.doublekekse.super_mod.component.SuperComponent;
 import dev.doublekekse.super_mod.packet.*;
+import dev.doublekekse.super_mod.registry.SuperAreaComponents;
 import dev.doublekekse.super_mod.registry.SuperBlockEntities;
 import dev.doublekekse.super_mod.registry.SuperBlocks;
 import net.fabricmc.api.EnvType;
@@ -99,6 +100,7 @@ public class SuperMod implements ModInitializer {
     public void onInitialize() {
         SuperBlocks.init();
         SuperBlockEntities.init();
+        SuperAreaComponents.register();
 
         Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, id("stuff"), SUPER_MOD_STUFF);
 
