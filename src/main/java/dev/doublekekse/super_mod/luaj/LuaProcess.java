@@ -47,6 +47,8 @@ public class LuaProcess {
 
         puterLib = new PiOsBasePuterLib(this);
         globals.load(puterLib);
+
+        globals.set("debug", LuaValue.NIL);
     }
 
 
